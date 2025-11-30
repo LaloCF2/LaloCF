@@ -1,0 +1,481 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>LaloCF - Gamer Mode</title>
+
+  <style>
+    /* ======= FONDO ANIMADO ======= */
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, sans-serif;
+      color: var(--text);
+      background: linear-gradient(45deg, #0f0f0f, #000428, #1a1a1a);
+      background-size: 600% 600%;
+      animation: moveBg 12s ease infinite;
+    }
+    @keyframes moveBg {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    :root {
+      --text: #e0e0e0;
+      --card-bg: rgba(0, 0, 0, 0.55);
+      --neon-blue: #00eaff;
+      --neon-pink: #ff00c8;
+      --neon-purple: #b400ff;
+    }
+
+    .container {
+      max-width:1100px;
+      margin:40px auto;
+      background: var(--card-bg);
+      padding:24px;
+      border-radius:14px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 0 25px rgba(0,0,0,0.6);
+    }
+
+    /* ======= NEÓN GLOW ======= */
+    .glow {
+      color: white;
+      text-shadow:
+        0 0 10px var(--neon-blue),
+        0 0 20px var(--neon-blue),
+        0 0 40px var(--neon-purple),
+        0 0 80px var(--neon-purple);
+    }
+
+    /* MENÚ */
+    .menu-btn {
+      width:32px;
+      height:26px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      cursor:pointer;
+    }
+    .menu-btn div {
+      height:4px;
+      background: white;
+      border-radius:4px;
+      box-shadow:0 0 6px var(--neon-blue);
+    }
+
+    .side-menu {
+      position:fixed;
+      top:0;
+      left:-260px;
+      width:260px;
+      height:100%;
+      background: rgba(5,5,5,0.87);
+      box-shadow:0 0 25px var(--neon-blue);
+      padding:20px;
+      transition:0.35s;
+      z-index:999;
+    }
+    .side-menu.open { left:0; }
+
+    .side-menu a {
+      display:block;
+      margin:20px 0;
+      text-decoration:none;
+      font-size:20px;
+      color:white;
+      font-weight:600;
+      text-shadow:0 0 8px var(--neon-blue);
+      cursor:pointer;
+    }
+
+    .close-menu {
+      font-size:26px;
+      text-align:right;
+      cursor:pointer;
+      color: var(--neon-pink);
+      text-shadow:0 0 8px var(--neon-pink);
+    }
+
+    /* TARJETAS */
+    .apks-grid, .mods-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+      gap:24px;
+      margin-top:20px;
+    }
+
+    .apk-card, .mod-card {
+      background: rgba(0,0,0,0.45);
+      padding:18px;
+      border-radius:12px;
+      border:1px solid var(--neon-blue);
+      box-shadow:0 0 15px var(--neon-blue);
+      text-align:center;
+    }
+
+    .apk-card img, .mod-card img {
+      width:100%;
+      height:150px;
+      object-fit:cover;
+      border-radius:10px;
+      margin-bottom:14px;
+      box-shadow:0 0 12px var(--neon-blue);
+    }
+
+    .btn {
+      display:inline-block;
+      padding:10px 16px;
+      margin-top:10px;
+      border-radius:8px;
+      background: var(--neon-pink);
+      color:white;
+      font-weight:600;
+      text-decoration:none;
+      box-shadow:0 0 12px var(--neon-pink);
+      cursor: pointer;
+    }
+
+    /* POPUP */
+    .popup {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .3s ease;
+    }
+    .popup.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .popup-content {
+      width: 85%;
+      max-width: 450px;
+      padding: 20px;
+      background: rgba(10,10,10,0.95);
+      border-radius: 15px;
+      position: relative;
+      border: 2px solid var(--neon-blue);
+      box-shadow: 0 0 25px var(--neon-blue);
+      color: white;
+    }
+
+    .popup-close {
+      position: absolute;
+      top: 8px;
+      right: 10px;
+      font-size: 26px;
+      cursor: pointer;
+      color: var(--neon-blue);
+    }
+
+    .popup-content img {
+      width: 100%;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+
+    /* CONTACTO */
+    .social-item {
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      background: rgba(0,0,0,0.45);
+      padding:12px;
+      border-radius:12px;
+      border:1px solid var(--neon-blue);
+      box-shadow:0 0 12px var(--neon-blue);
+      margin-bottom:18px;
+    }
+    .social-item img {
+      width:40px;
+      height:40px;
+      border-radius:8px;
+      box-shadow:0 0 8px var(--neon-pink);
+    }
+
+    .section { display:none; }
+    .active{ display:block; }
+
+  </style>
+</head>
+
+<body>
+
+  <!-- AUDIO -->
+  <audio id="openSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_9b9ffad60a.mp3?filename=click-124467.mp3"></audio>
+
+  <!-- MENU -->
+  <div class="side-menu" id="sideMenu">
+    <div class="close-menu" onclick="toggleMenu()">✖</div>
+
+    <a onclick="showSection('apks')">APKs</a>
+    <a onclick="showSection('mods')">MODs</a>
+    <a onclick="showSection('contact')">Contacto</a>
+  </div>
+
+  <div class="container">
+
+    <header style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+      <div class="menu-btn" onclick="toggleMenu()">
+        <div></div><div></div><div></div>
+      </div>
+      <h1 class="glow">LaloCF</h1>
+    </header>
+
+
+    <section>
+      <h1>Bienvenido a LaloCF</h1>
+      <p>Tu rincón de mods para Friday Night Funkin' Mobile. ¡Explora y descarga!</p>
+    </section>
+
+      <div class="games-grid">
+
+    <!-- ================= APKs ================= -->
+    <section id="apks" class="section active">
+      <h2 class="glow">APKs</h2>
+
+      <div class="apks-grid">
+
+        <div class="apk-card">
+          <img src="assets/images/logopsych.jpeg">
+          <h3>Psych Engine</h3>
+          <button class="btn" onclick="openApkInfo('apk1')">Más información</button>
+        </div>
+
+        <div class="apk-card">
+          <img src="assets/images/logopsych.jpeg">
+          <h3>Psych Online</h3>
+          <button class="btn" onclick="openApkInfo('apk2')">Más información</button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- POPUP APK INFO -->
+    <div id="apk-popup" class="popup">
+      <div class="popup-content">
+        <span class="popup-close" onclick="closeApkInfo()">✖</span>
+
+        <img id="apk-img">
+        <h2 id="apk-title"></h2>
+        <p id="apk-desc"></p>
+
+        <h3 id="apk-version" style="color:#00eaff; margin-bottom:10px;"></h3>
+
+        <div id="apk-downloads"></div>
+
+      </div>
+    </div>
+
+    <!-- ================= MODS ================= -->
+    <section id="mods" class="section">
+      <h2 class="glow">MODs Disponibles</h2>
+
+      <div class="mods-grid">
+
+        <div class="mod-card">
+          <img src="assets/images/mod1.png">
+          <h3>Unknown</h3>
+          <button class="btn" onclick="openModInfo('mod1')">Más información</button>
+        </div>
+
+        <div class="mod-card">
+          <img src="assets/images/mod2.png">
+          <h3>Unknown</h3>
+          <button class="btn" onclick="openModInfo('mod2')">Más información</button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- POPUP MOD INFO -->
+    <div id="mod-popup" class="popup">
+      <div class="popup-content">
+        <span class="popup-close" onclick="closeModInfo()">✖</span>
+
+        <img id="popup-img">
+        <h2 id="popup-title"></h2>
+        <p id="popup-desc"></p>
+
+        <h3 id="popup-version" style="color:#00eaff; margin-bottom:10px;"></h3>
+
+        <div id="popup-downloads"></div>
+
+      </div>
+    </div>
+
+    <!-- ================= CONTACTO ================= -->
+    <section id="contact" class="section">
+      <h2 class="glow">Contacto</h2>
+
+      <div class="social-item">
+        <img src="assets/icons/youtube.jpeg">
+        <a class="btn" href="https://youtube.com/@lalo_cf1" target="_blank">YouTube</a>
+      </div>
+
+      <div class="social-item">
+        <img src="assets/icons/telegram.jpeg">
+        <a class="btn" href="https://t.me/lalo_cf_mods" target="_blank">Telegram</a>
+      </div>
+
+      <div class="social-item">
+        <img src="assets/icons/instagram.jpeg">
+        <a class="btn" href="https://instagram.com/lalo_cf1" target="_blank">Instagram</a>
+      </div>
+
+      <div class="social-item">
+        <img src="assets/icons/tiktok.jpeg">
+        <a class="btn" href="https://tiktok.com/@lalo_cf" target="_blank">TikTok</a>
+      </div>
+
+    </section>
+
+    <footer style="margin-top:40px; text-align:center; color:white;">
+      © <span id="year"></span> LaloCF — Página de prueba
+    </footer>
+  </div>
+
+<script>
+/* ======= MENU ======= */
+function toggleMenu() {
+  const menu = document.getElementById("sideMenu");
+  const sound = document.getElementById("openSound");
+  menu.classList.toggle("open");
+  sound.currentTime = 0;
+  sound.play();
+}
+
+function showSection(id) {
+  document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+/* =================== MANEJO DE MODS =================== */
+const MOD_DATA = {
+  mod1: {
+    img: "assets/images/",
+    title: "Unknown",
+    desc: "Unknown",
+    version: "vUnknown",
+    downloads: [
+      { name: "Descarga (pronto)", link: "assets/mods/" },
+      { name: "Descarga (pronto)", link: "assets/mods/" }
+    ]
+  },
+  mod2: {
+    img: "assets/images/",
+    title: "Unknown",
+    desc: "Unknown",
+    version: "vUnknown",
+    downloads: [
+      { name: "Descarga (pronto)", link: "assets/mods/" },
+      { name: "Descarga (pronto)", link: "assets/mods/" }
+    ]
+  }
+};
+
+function openModInfo(id) {
+  const data = MOD_DATA[id];
+
+  document.getElementById("popup-img").src = data.img;
+  document.getElementById("popup-title").innerText = data.title;
+  document.getElementById("popup-desc").innerText = data.desc;
+  document.getElementById("popup-version").innerText = data.version;
+
+  let html = "";
+  data.downloads.forEach(d => {
+    html += `<a class="btn" style="display:block; margin-top:10px;" href="${d.link}" download>${d.name}</a>`;
+  });
+
+  document.getElementById("popup-downloads").innerHTML = html;
+
+  document.getElementById("mod-popup").classList.add("show");
+}
+
+function closeModInfo() {
+  document.getElementById("mod-popup").classList.remove("show");
+}
+
+/* =================== MANEJO DE APKs =================== */
+const APK_DATA = {
+  apk1: {
+    img: "assets/images/logopsychengine.jpeg",
+    title: "Psych Engine",
+    desc: "Motor usado originalmente en Mind Games Mod , concebido para solucionar los numerosos problemas de la versión original, manteniendo el aspecto de juego casual. También busca ser una alternativa más sencilla para programadores principiantes.",
+    version: "v1.0.4",
+    downloads: [
+      { name: "Descarga Windows", link: "assets/zip/Psych Engine-Windows64.zip" },
+      { name: "Descarga Android", link: "assets/apks/Psych Engine 1.0.4.apk" },
+      { name: "Descarga iOS", link: "assets/zip/Psych Engine 1.0.4.zip" }
+    ]
+  },
+
+  apk2: {
+    img: "assets/images/logopsychonline.png",
+    title: "Psych Online",
+    desc: "Mod de Psych Engine que utiliza funciones en línea.",
+    version: "v0.13.2 Bugfix",
+    downloads: [
+      { name: "Descarga Android", link: "assets/apks/PsychOnline-Andrpid.apk" },
+      { name: "Descarga iOS", link: "assets/ipas/PsychOnline-iOS.ipa" }
+    ]
+  }
+};
+
+function openApkInfo(id) {
+  const data = APK_DATA[id];
+
+  document.getElementById("apk-img").src = data.img;
+  document.getElementById("apk-title").innerText = data.title;
+  document.getElementById("apk-desc").innerText = data.desc;
+  document.getElementById("apk-version").innerText = data.version;
+
+  let html = "";
+  data.downloads.forEach(d => {
+    html += `<a class="btn" style="display:block; margin-top:10px;" href="${d.link}" download>${d.name}</a>`;
+  });
+
+  document.getElementById("apk-downloads").innerHTML = html;
+
+  document.getElementById("apk-popup").classList.add("show");
+}
+
+function closeApkInfo() {
+  document.getElementById("apk-popup").classList.remove("show");
+}
+
+function openApkInfo(id) {
+  const data = APK_DATA[id];
+
+  document.getElementById("apk-img").src = data.img;
+  document.getElementById("apk-title").innerText = data.title;
+  document.getElementById("apk-desc").innerText = data.desc;
+  document.getElementById("apk-version").innerText = data.version;
+
+  let html = "";
+  data.downloads.forEach(d => {
+    html += `<a class="btn" style="display:block; margin-top:10px;" href="${d.link}" download>${d.name}</a>`;
+  });
+
+  document.getElementById("apk-downloads").innerHTML = html;
+
+  document.getElementById("apk-popup").classList.add("show");
+}
+
+function closeApkInfo() {
+  document.getElementById("apk-popup").classList.remove("show");
+}
+
+document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+
+</body>
+</html>
