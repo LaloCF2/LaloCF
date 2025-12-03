@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>LaloCF - Gamer Mode</title>
+  <title>LaloCF - Gamer Mods</title>
 
   <style>
     /* ======= FONDO ANIMADO ======= */
@@ -19,6 +19,34 @@
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
+    }
+
+    /* ======= EFECTO DE NEBULOSA NEÓN (AGREGADO) ======= */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background: radial-gradient(circle at 20% 30%, rgba(0, 255, 255, 0.25), transparent 60%),
+                  radial-gradient(circle at 80% 70%, rgba(255, 0, 200, 0.25), transparent 60%),
+                  radial-gradient(circle at 50% 50%, rgba(180, 0, 255, 0.2), transparent 70%);
+      filter: blur(80px);
+      animation: nebulaMove 18s ease-in-out infinite alternate;
+    }
+
+    @keyframes nebulaMove {
+      0% {
+        transform: translate(-40px, -40px) scale(1.1);
+        opacity: 0.7;
+      }
+      50% {
+        transform: translate(40px, 20px) scale(1.3);
+        opacity: 1;
+      }
+      100% {
+        transform: translate(-20px, 40px) scale(1.2);
+        opacity: 0.8;
+      }
     }
 
     :root {
@@ -64,7 +92,6 @@
       border-radius:4px;
       box-shadow:0 0 6px var(--neon-blue);
     }
-
 
     /* ======= NUEVO POPUP-MENÚ ======= */
     #menuPopup {
@@ -242,14 +269,13 @@
     <div id="menuContent">
       <h2>Menú</h2>
 
-      <div class="menu-option" onclick="selectSection('apks')">APKs</div>
+      <div class="menu-option" onclick="selectSection('apks')">Descargas</div>
       <div class="menu-option" onclick="selectSection('mods')">MODs</div>
       <div class="menu-option" onclick="selectSection('contact')">Contacto</div>
 
-      <div id="closeMenuPopup" onclick="toggleMenu()">Cerrar ✖</div>
+      <div id="closeMenuPopup" onclick="toggleMenu()">✖</div>
     </div>
   </div>
-
 
   <div class="container">
 
@@ -260,7 +286,6 @@
       <h1 class="glow">LaloCF</h1>
     </header>
 
-
     <section>
       <h1>Bienvenido a LaloCF</h1>
       <p>Tu rincón de mods para Friday Night Funkin' Mobile. ¡Explora y descarga!</p>
@@ -270,7 +295,7 @@
 
     <!-- ================= APKs ================= -->
     <section id="apks" class="section active">
-      <h2 class="glow">APKs</h2>
+      <h2 class="glow">Bases Disponibles</h2>
 
       <div class="apks-grid">
 
@@ -282,7 +307,7 @@
 
         <div class="apk-card">
           <img src="assets/images/logoonline.png">
-          <h3>Psych Online</hh3>
+          <h3>Psych Online</h3>
           <button class="btn" onclick="openApkInfo('apk2')">Más información</button>
         </div>
 
@@ -312,17 +337,11 @@
       <div class="mods-grid">
 
         <div class="mod-card">
-          <img src="assets/images/mod1.png">
-          <h3>Unknown</h3>
+          <img src="assets/images/mods/logojeffy.jpeg">
+          <h3>VS Jeffy V3 (BABY BF VS BABY PICO)</h3>
           <button class="btn" onclick="openModInfo('mod1')">Más información</button>
         </div>
-
-        <div class="mod-card">
-          <img src="assets/images/mod2.png">
-          <h3>Unknown</h3>
-          <button class="btn" onclick="openModInfo('mod2')">Más información</button>
-        </div>
-
+        
       </div>
     </section>
 
@@ -344,11 +363,11 @@
 
     <!-- ================= CONTACTO ================= -->
     <section id="contact" class="section">
-      <h2 class="glow">Contacto</h2>
+      <h2 class="glow">Redes Sociales</h2>
 
       <div class="social-item">
         <img src="assets/icons/youtube.jpeg">
-        <a class="btn" href="https://youtube.com/@lalo_cf1" target="_blank">YouTube</a>
+        <a class="btn" href="" target="_blank">YouTube</a>
       </div>
 
       <div class="social-item">
@@ -369,13 +388,11 @@
     </section>
 
     <footer style="margin-top:40px; text-align:center; color:white;">
-      © <span id="year"></span> LaloCF — Página de prueba
+      © <span id="year"></span> LaloCF — Test Web
     </footer>
   </div>
 
 <script>
-
-/* ======= POPUP MENÚ ======= */
 
 function toggleMenu() {
   const popup = document.getElementById("menuPopup");
@@ -393,29 +410,17 @@ function selectSection(id) {
   toggleMenu();
 }
 
-
-/* =================== MANEJO DE MODS =================== */
 const MOD_DATA = {
   mod1: {
     img: "assets/images/mods/logojeffy.jpeg",
     title: "VS Jeffy V3 (BABY BF VS BABY PICO)",
-    desc: "Friday Night Funkin' FNF Vs Jeffy V3 Port Psych Engine Optimizado Para (Pc/Android/iOS)",
+    desc: "Friday Night Funkin' FNF Vs Jeffy V3 Port Psych Engine Optimizado Para (Pc/Android)",
     version: "v1.0",
     downloads: [
       { name: "Descarga", link: "assets/zip/VS Jeffy V3 (BABY BF VS BABY PICO).zip" }
     ]
-  },
-  mod2: {
-    img: "assets/images/",
-    title: "Unknown",
-    desc: "Unknown",
-    version: "vUnknown",
-    downloads: [
-      { name: "Descarga (pronto)", link: "assets/mods/" },
-      { name: "Descarga (pronto)", link: "assets/mods/" }
-    ]
   }
-};
+},
 
 function openModInfo(id) {
   const data = MOD_DATA[id];
@@ -439,13 +444,11 @@ function closeModInfo() {
   document.getElementById("mod-popup").classList.remove("show");
 }
 
-
-/* =================== MANEJO DE APKs =================== */
 const APK_DATA = {
   apk1: {
     img: "assets/images/logopsychengine.png",
     title: "Psych Engine",
-    desc: "Motor usado originalmente en Mind Games Mod...",
+    desc: "Motor usado originalmente en Mind Games Mod, concebido para solucionar los numerosos problemas de la versión original, manteniendo el aspecto de juego casual. También busca ser una alternativa más sencilla para programadores principiantes.",
     version: "v1.0.4",
     downloads: [
       { name: "Descarga Windows64", link: "https://github.com/ShadowMario/FNF-PsychEngine/releases/download/1.0.4/PsychEngine-Windows64.zip" },
